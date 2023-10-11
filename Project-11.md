@@ -7,9 +7,10 @@ sudo apt update
 ![alt text](image.jpg)
 
 ## sudo apt install ansible
+
 Check your Ansible version by running ansible --version
 
-![ansible-version](.jpg)   
+![ansible-version](./images/ansible-version.png)   
 
 Configure Jenkins build job to save your repository content every time you change it – this will solidify your Jenkins configuration skills acquired in Project 9.
 Create a new Freestyle project ansible in Jenkins and point it to your ‘ansible-config-mgt’ repository.
@@ -21,7 +22,7 @@ Note: Trigger Jenkins project execution only for /main (master) branch.
 
 Now your setup will look like this:
 
-![alt text](image.jpg)
+![artifacts](./images/artifacts-testing.png)
 
 Tip Every time you stop/start your Jenkins-Ansible server – you have to reconfigure GitHub webhook to a new IP address, in order to avoid it, it makes sense to allocate an Elastic IP to your Jenkins-Ansible server (you have done it before to your LB server in Project 10). Note that Elastic IP is free only when it is being allocated to an EC2 Instance, so do not forget to release Elastic IP once you terminate your EC2 Instance.
 
@@ -30,6 +31,10 @@ First part of ‘DevOps’ is ‘Dev’, which means you will require to write s
 After you have successfully installed VSC, configure it to connect to your newly created GitHub repository.
 Clone down your ansible-config-mgt repo to your Jenkins-Ansible instance
 git clone <ansible-config-mgt repo link>
+
+![git-hub](./images/githhub-testconf.png)
+
+![jenkins-output](./images/jenkins%20output.png)
 
 ## BEGIN ANSIBLE DEVELOPMENT
 In your ansible-config-mgt GitHub repository, create a new branch that will be used for development of a new feature.
@@ -41,7 +46,7 @@ Create a directory and name it inventory – it will be used to keep your hosts 
 Within the playbooks folder, create your first playbook, and name it common.yml
 Within the inventory folder, create an inventory file (.yml) for each environment (Development, Staging Testing and Production) dev, staging, uat, and prod respectively.
 
-![alt text](image.jpg)
+![image-1](./images/image-1.png)
 
 
 ## Step 4 – Set up an Ansible Inventory
@@ -65,7 +70,7 @@ Now, ssh into your Jenkins-Ansible server using ssh-agent
 ssh -A ubuntu@public-ip
 Also notice, that your Load Balancer user is ubuntu and user for RHEL-based servers is ec2-user.
 
-![Alt text](image.png)
+![ss-jenkins](./images/ssh-jenkins.png)
 
 Update your inventory/dev.yml file with this snippet of code:
 
@@ -90,6 +95,7 @@ In common.yml playbook you will write configuration for repeatable, re-usable, a
 
 Update your playbooks/common.yml file with following code:
 
+![image-2](./images/image-2.png)
 ---
 - name: update web, nfs and db servers
   hosts: webservers, nfs, db
@@ -118,7 +124,7 @@ Update your playbooks/common.yml file with following code:
         state: latest
 Examine the code above and try to make sense out of it. This playbook is divided into two parts, each of them is intended to perform the same task: install wireshark utility (or make sure it is updated to the latest version) on your RHEL 8 and Ubuntu servers. It uses root user to perform this task and respective package manager: yum for RHEL 8 and apt for Ubuntu.
 
-![Alt text](image-1.png)
+![Alt text](./images/image-3.png)
 
 Feel free to update this playbook with following tasks:
 
@@ -145,7 +151,7 @@ git add <selected files>
 git commit -m "commit message"
 Create a Pull request (PR)
 
-![Alt text](image-2.png)
+![git-hub](./images/git%20-hub%20merge%20request.png)
 
 Wear a hat of another developer for a second, and act as a reviewer.
 
@@ -159,17 +165,19 @@ Once your code changes appear in master branch – Jenkins will do its job and s
 Step 7 – Run first Ansible test
 Now, it is time to execute ansible-playbook command and verify if your playbook actually works:
 
+![playbooks](./images/playbooks.png)
+
 cd ansible-config-mgt
 ansible-playbook -i inventory/dev.yml playbooks/common.yml
 You can go to each of the servers and check if wireshark has been installed by running which wireshark or wireshark --version
 
+![wireshark](./images/wireshark%20runnng.png)
 
 
 Your updated with Ansible architecture now looks like this:
 
-![Alt text](image-3.png)
 
-Optional step – Repeat once again
+onal step – Repeat once again
 Update your ansible playbook with some new Ansible tasks and go through the full checkout -> change codes -> commit -> PR -> merge -> build -> ansible-playbook cycle again to see how easily you can manage a servers fleet of any size with just one command!
 
 Congratulations
